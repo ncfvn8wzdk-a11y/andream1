@@ -33,6 +33,9 @@ model Project {
   commessa        String?
   description     String?
   businessBenefit String?
+  projectType     String     @default("plant") // plant, production_line, retrofit, maintenance
+  currentPhase    String     @default("concept") // concept, basic_eng, detail_eng, procurement, build, fat, installation, sat, training, handover
+  budget          Float?     // budget pianificato in €
   status          String     @default("active") // active, on-hold, completed, closed, archived
   startDate       DateTime?
   endDate         DateTime?
@@ -49,6 +52,7 @@ model Project {
 
   @@index([ownerId])
   @@index([status])
+  @@index([currentPhase])
 }
 
 

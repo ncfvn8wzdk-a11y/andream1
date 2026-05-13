@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import StatusBadge from "@/components/StatusBadge";
 import RoleBadges from "@/components/RoleBadges";
-import { Project, UserRole } from "@/types";
+import PhaseTracker from "@/components/PhaseTracker";
+import BudgetTracker from "@/components/BudgetTracker";
+import { Project, UserRole, ProjectPhase } from "@/types";
 
 interface ProjectDetail extends Project {
   owner: { name: string };
@@ -31,6 +33,7 @@ export default function ProjectDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isUpdatingPhase, setIsUpdatingPhase] = useState(false);
 
   useEffect(() => {
     fetch(`/api/projects/${projectId}`)
@@ -69,6 +72,30 @@ export default function ProjectDetailPage() {
 
   const handleDownloadReport = async () => {
     window.location.href = `/api/projects/${projectId}/report`;
+  };
+
+  const handlePhaseChange = async (newPhase: ProjectPhase) => {
+    if (!project) return;
+
+    setIsUpdatingPhase(true);
+    try {
+      const res = await fetch(`/api/projects/${projectId}/update`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPhase: newPhase }),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        setProject(json.data);
+      } else {
+        setError("Errore nell'aggiornamento della fase");
+      }
+    } catch {
+      setError("Errore di rete");
+    } finally {
+      setIsUpdatingPhase(false);
+    }
   };
 
   const hoursPerMember = project?.timeLogs.reduce(
@@ -136,6 +163,15 @@ export default function ProjectDetailPage() {
           <StatusBadge status={project.status} />
         </div>
 
+        {/* Phase Tracker */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <PhaseTracker
+            currentPhase={project.currentPhase}
+            onPhaseChange={handlePhaseChange}
+            readonly={isUpdatingPhase}
+          />
+        </div>
+
         {/* Description */}
         {project.description && (
           <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
@@ -173,6 +209,16 @@ export default function ProjectDetailPage() {
             <p className="text-lg font-semibold text-gray-900">{totalHours.toFixed(1)}</p>
           </div>
         </div>
+
+        {/* Budget Tracker */}
+        {project.budget && (
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+              Budget
+            </h2>
+            <BudgetTracker budget={project.budget} totalHours={totalHours} />
+          </div>
+        )}
 
         {/* Team */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">

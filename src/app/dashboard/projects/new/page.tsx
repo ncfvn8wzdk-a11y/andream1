@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import TeamMemberSelector from "@/components/TeamMemberSelector";
-import { UserRole } from "@/types";
+import { UserRole, ProjectType } from "@/types";
+import { PROJECT_TYPES } from "@/lib/project-config";
 
 interface User {
   id: string;
@@ -21,6 +22,8 @@ interface FormData {
   commessa: string;
   description: string;
   businessBenefit: string;
+  projectType: ProjectType;
+  budget: string;
   startDate: string;
   endDate: string;
 }
@@ -30,6 +33,8 @@ const EMPTY_FORM: FormData = {
   commessa: "",
   description: "",
   businessBenefit: "",
+  projectType: "plant",
+  budget: "",
   startDate: "",
   endDate: "",
 };
@@ -73,6 +78,8 @@ export default function NewProjectPage() {
           commessa: form.commessa.trim() || undefined,
           description: form.description.trim() || undefined,
           businessBenefit: form.businessBenefit.trim() || undefined,
+          projectType: form.projectType,
+          budget: form.budget ? parseFloat(form.budget) : undefined,
           startDate: form.startDate || undefined,
           endDate: form.endDate || undefined,
           ownerId: "PLACEHOLDER", // replaced with session user id after auth setup
@@ -185,7 +192,52 @@ export default function NewProjectPage() {
             </div>
           </section>
 
-          {/* SECTION 3: Date */}
+          {/* SECTION 3: Tipo e Budget */}
+          <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Tipo Progetto e Budget
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tipo Progetto <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="projectType"
+                  value={form.projectType}
+                  onChange={handleField}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {(Object.entries(PROJECT_TYPES) as Array<[ProjectType, any]>).map(
+                    ([type, config]) => (
+                      <option key={type} value={type}>
+                        {config.label} — {config.description}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Budget Pianificato (€)
+                </label>
+                <input
+                  type="number"
+                  name="budget"
+                  value={form.budget}
+                  onChange={handleField}
+                  placeholder="es. 50000"
+                  step="100"
+                  min="0"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* SECTION 4: Date */}
           <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
             <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
               Durata
@@ -221,7 +273,7 @@ export default function NewProjectPage() {
             </div>
           </section>
 
-          {/* SECTION 4: Team */}
+          {/* SECTION 5: Team */}
           <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
             <div>
               <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
