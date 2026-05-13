@@ -1,0 +1,41 @@
+<svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="url(#gradient)" opacity="0.1" />
+
+  <!-- Main icon: Location pin with automation symbol -->
+  <g>
+    <!-- Pin shape -->
+    <path
+      d="M32 12C24.268 12 18 18.268 18 26C18 35 32 50 32 50C32 50 46 35 46 26C46 18.268 39.732 12 32 12Z"
+      fill="#2563eb"
+    />
+
+    <!-- Circle inside pin -->
+    <circle cx="32" cy="26" r="6" fill="white" />
+
+    <!-- Automation gear symbol inside circle -->
+    <g transform="translate(32, 26)">
+      <!-- Center dot -->
+      <circle cx="0" cy="0" r="1.5" fill="#2563eb" />
+
+      <!-- Rotation arcs -->
+      <circle cx="0" cy="-2" r="0.8" fill="#2563eb" opacity="0.8" />
+      <circle cx="1.4" cy="-1.4" r="0.8" fill="#2563eb" opacity="0.6" />
+    </g>
+  </g>
+
+  <!-- Gradient definition -->
+  <defs>
+    <linearGradient
+      id="gradient"
+      x1="0"
+      y1="0"
+      x2="64"
+      y2="64"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop offset="0%" stopColor="#2563eb" />
+      <stop offset="100%" stopColor="#1e40af" />
+    </linearGradient>
+  </defs>
+</svg>

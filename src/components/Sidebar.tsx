@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Logo from "./Logo";
 
 interface NavItem {
   label: string;
@@ -28,8 +29,13 @@ export default function Sidebar() {
     <aside className="w-64 bg-gradient-to-b from-slate-900 to-slate-800 text-white flex flex-col h-screen border-r border-slate-700">
       {/* Header */}
       <div className="p-6 border-b border-slate-700">
-        <h1 className="text-2xl font-bold text-blue-400">📍 Project Hub</h1>
-        <p className="text-xs text-slate-400 mt-1">Timezone-aware Project Mgmt</p>
+        <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Logo size="small" variant="dark" showText={false} />
+          <div>
+            <h1 className="text-lg font-bold text-blue-400">Project Hub</h1>
+            <p className="text-xs text-slate-400">Timezone-aware</p>
+          </div>
+        </Link>
       </div>
 
       {/* Main Navigation */}

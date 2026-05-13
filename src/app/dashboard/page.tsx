@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Logo from "@/components/Logo";
 
 interface Project {
   id: string;
@@ -106,13 +107,16 @@ export default function DashboardHome() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 py-10">
-        {/* Header */}
-        <div className="mb-10">
+        {/* Header with Logo */}
+        <div className="mb-12 text-center">
+          <div className="flex justify-center mb-8">
+            <Logo size="large" variant="dark" showText={true} />
+          </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Benvenuto nella Piattaforma
+            Piattaforma di Gestione Progetti
           </h1>
-          <p className="text-gray-600">
-            Gestisci i tuoi progetti con consapevolezza dei fusi orari
+          <p className="text-gray-600 text-lg">
+            Gestisci i tuoi progetti con consapevolezza dei fusi orari (Italia 🇮🇹 ↔️ USA 🇺🇸)
           </p>
         </div>
 
