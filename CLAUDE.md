@@ -55,10 +55,17 @@ npm start                # Run production server
 
 Key models in `prisma/schema.prisma`:
 - **User** — email, password, timezone preference
-- **Project** — name, description, owner (User), status
+- **Project** — name, commessa, description, businessBenefit, owner (User), status, closedAt
 - **ProjectMember** — joins User + Project with role (owner/lead/member)
 - **ProjectFile** — uploaded files (invoices, drawings, PDFs) with metadata
 - **TimeLog** — hours logged by team members per project per date
+
+### Project Status Values
+- `active` — project is in progress
+- `on-hold` — project is temporarily paused
+- `completed` — project is complete but not formally closed
+- `closed` — project is closed, closedAt is set, report can be generated
+- `archived` — project is archived for historical reference
 
 ## Project Structure
 
@@ -92,6 +99,19 @@ src/
 2. `npm install`
 3. `npm run db:push` to initialize database
 4. `npm run dev` to start
+
+## Project Report Generation
+
+The app supports generating Word documents with project closure reports. Key endpoints:
+
+- **GET** `/api/projects/[projectId]/report` — Download project report as .docx file
+  - Includes: project details, team members, hours per person, total hours, business benefits
+  
+- **POST** `/api/projects/[projectId]/close` — Mark project as closed (sets status="closed", closedAt=now)
+  
+- **PATCH** `/api/projects/[projectId]/update` — Update project fields (name, commessa, description, businessBenefit, status)
+
+Use the `docx` library to generate Word files. See `src/lib/report-generator.ts` for the document template.
 
 ## Pre-commit Hooks
 

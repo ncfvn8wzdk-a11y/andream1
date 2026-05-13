@@ -17,10 +17,19 @@ export interface Project {
   name: string;
   commessa?: string;
   description?: string;
+  businessBenefit?: string;
   status: ProjectStatus;
+  closedAt?: Date;
   ownerId: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ProjectReportData {
+  project: Project;
+  members: (ProjectMember & { user: User })[];
+  timeLogs: TimeLog[];
+  totalHours: number;
 }
 
 export interface ProjectMember {

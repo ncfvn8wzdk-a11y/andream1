@@ -28,14 +28,16 @@ model User {
 }
 
 model Project {
-  id          String     @id @default(cuid())
-  name        String
-  commessa    String?    // numero commessa (job order number)
-  description String?
-  status      String     @default("active") // active, on-hold, completed, archived
-  ownerId     String
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id              String     @id @default(cuid())
+  name            String
+  commessa        String?    // numero commessa (job order number)
+  description     String?
+  businessBenefit String?    // benefici aziendali del progetto
+  status          String     @default("active") // active, on-hold, completed, archived, closed
+  closedAt        DateTime?  // data di chiusura del progetto
+  ownerId         String
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   // Relations
   owner       User             @relation("owner", fields: [ownerId], references: [id])
@@ -46,6 +48,7 @@ model Project {
   @@index([ownerId])
   @@index([status])
 }
+
 
 model ProjectMember {
   id        String   @id @default(cuid())
