@@ -110,7 +110,9 @@ export default function DashboardHome() {
         {/* Header with Logo */}
         <div className="mb-12 text-center">
           <div className="flex justify-center mb-8">
-            <Logo size="large" variant="dark" showText={true} />
+            <div className="pointer-events-none">
+              <Logo size="large" showText={true} href="" />
+            </div>
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Piattaforma di Gestione Progetti

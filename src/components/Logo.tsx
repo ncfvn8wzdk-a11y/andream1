@@ -1,97 +1,99 @@
+import Link from "next/link";
+
 interface LogoProps {
   size?: "small" | "medium" | "large";
-  variant?: "light" | "dark";
   showText?: boolean;
+  href?: string;
 }
 
 export default function Logo({
   size = "medium",
-  variant = "dark",
   showText = true,
+  href = "/dashboard",
 }: LogoProps) {
   const sizes = {
-    small: { width: 32, height: 32, textSize: "text-sm" },
-    medium: { width: 48, height: 48, textSize: "text-lg" },
-    large: { width: 64, height: 64, textSize: "text-2xl" },
+    small: "w-8 h-8",
+    medium: "w-12 h-12",
+    large: "w-20 h-20",
   };
 
-  const colors = {
-    light: { bg: "bg-white", text: "text-white", icon: "text-blue-600" },
-    dark: { bg: "bg-slate-900", text: "text-white", icon: "text-blue-400" },
+  const textSizes = {
+    small: "text-sm",
+    medium: "text-base",
+    large: "text-2xl",
   };
 
-  const { width, height, textSize } = sizes[size];
-  const { icon } = colors[variant];
-
-  return (
+  const logoElement = (
     <div className="flex items-center gap-3">
-      <svg
-        width={width}
-        height={height}
-        viewBox="0 0 64 64"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="flex-shrink-0"
-      >
-        {/* Background circle */}
-        <circle cx="32" cy="32" r="30" fill="url(#gradient)" opacity="0.1" />
+      <div className={`${sizes[size]} flex-shrink-0`}>
+        <svg
+          viewBox="0 0 200 200"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full"
+        >
+          {/* Malvestiti Automation Logo */}
+          <defs>
+            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style={{ stopColor: "#2563eb", stopOpacity: 1 }} />
+              <stop offset="100%" style={{ stopColor: "#1e40af", stopOpacity: 1 }} />
+            </linearGradient>
+          </defs>
 
-        {/* Main icon: Location pin with automation symbol */}
-        <g>
-          {/* Pin shape */}
-          <path
-            d="M32 12C24.268 12 18 18.268 18 26C18 35 32 50 32 50C32 50 46 35 46 26C46 18.268 39.732 12 32 12Z"
-            fill="currentColor"
-            className={icon}
-          />
+          {/* Background */}
+          <circle cx="100" cy="100" r="98" fill="none" stroke="url(#logoGradient)" strokeWidth="2" />
 
-          {/* Circle inside pin */}
-          <circle cx="32" cy="26" r="6" fill="white" />
+          {/* Main M letter - stylized */}
+          <g transform="translate(50, 50)">
+            {/* Left vertical line of M */}
+            <rect x="10" y="20" width="8" height="60" fill="#2563eb" rx="4" />
 
-          {/* Automation gear symbol inside circle */}
-          <g transform="translate(32, 26)">
-            {/* Center dot */}
-            <circle cx="0" cy="0" r="1.5" fill="currentColor" className={icon} />
+            {/* Right vertical line of M */}
+            <rect x="82" y="20" width="8" height="60" fill="#2563eb" rx="4" />
 
-            {/* Rotation arcs */}
-            <circle
-              cx="0"
-              cy="-2"
-              r="0.8"
-              fill="currentColor"
-              className={icon}
-              opacity="0.8"
-            />
-            <circle
-              cx="1.4"
-              cy="-1.4"
-              r="0.8"
-              fill="currentColor"
-              className={icon}
-              opacity="0.6"
-            />
+            {/* Peak lines forming M shape */}
+            <path d="M 18 20 L 46 50 L 74 20" stroke="#2563eb" strokeWidth="8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+
+            {/* Automation gear in center */}
+            <g transform="translate(46, 75)">
+              <circle cx="0" cy="0" r="12" fill="none" stroke="#2563eb" strokeWidth="2" />
+              <circle cx="0" cy="0" r="4" fill="#2563eb" />
+
+              {/* Gear teeth */}
+              <rect x="-2" y="-18" width="4" height="6" fill="#2563eb" />
+              <rect x="-2" y="12" width="4" height="6" fill="#2563eb" />
+              <rect x="12" y="-2" width="6" height="4" fill="#2563eb" />
+              <rect x="-18" y="-2" width="6" height="4" fill="#2563eb" />
+            </g>
           </g>
-        </g>
 
-        {/* Gradient definition */}
-        <defs>
-          <linearGradient
-            id="gradient"
-            x1="0"
-            y1="0"
-            x2="64"
-            y2="64"
-            gradientUnits="userSpaceOnUse"
+          {/* Text below logo */}
+          <text
+            x="100"
+            y="170"
+            textAnchor="middle"
+            fontSize="16"
+            fontWeight="bold"
+            fill="#2563eb"
+            fontFamily="Arial, sans-serif"
           >
-            <stop offset="0%" stopColor="#2563eb" />
-            <stop offset="100%" stopColor="#1e40af" />
-          </linearGradient>
-        </defs>
-      </svg>
+            MALVESTITI
+          </text>
+          <text
+            x="100"
+            y="188"
+            textAnchor="middle"
+            fontSize="10"
+            fill="#1e40af"
+            fontFamily="Arial, sans-serif"
+          >
+            AUTOMATION
+          </text>
+        </svg>
+      </div>
 
       {showText && (
         <div className="flex flex-col">
-          <span className={`${textSize} font-bold text-gray-900`}>
+          <span className={`${textSizes[size]} font-bold text-gray-900`}>
             Malvestiti
           </span>
           <span className="text-xs font-semibold text-blue-600">Automation</span>
@@ -99,4 +101,14 @@ export default function Logo({
       )}
     </div>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="hover:opacity-80 transition-opacity">
+        {logoElement}
+      </Link>
+    );
+  }
+
+  return logoElement;
 }
