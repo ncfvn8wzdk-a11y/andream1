@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  name      String
+  timezone  String     @default("UTC")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relations
+  ownedProjects  Project[]      @relation("owner")
+  projectMembers ProjectMember[]
+  timeLogs       TimeLog[]
+
+  @@index([email])
+}
+
+model Project {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  status      String     @default("active") // active, on-hold, completed, archived
+  ownerId     String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  owner       User             @relation("owner", fields: [ownerId], references: [id])
+  members     ProjectMember[]
+  files       ProjectFile[]
+  timeLogs    TimeLog[]
+
+  @@index([ownerId])
+  @@index([status])
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String
+  role      String   @default("member") // owner, lead, member
+  joinedAt  DateTime @default(now())
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@index([projectId])
+}
+
+model ProjectFile {
+  id        String   @id @default(cuid())
+  projectId String
+  fileName  String
+  fileType  String   // invoice, drawing, photo, pdf, other
+  fileSize  Int      // in bytes
+  fileUrl   String   // path or S3 URL
+  uploadedBy String
+  uploadedAt DateTime @default(now())
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([fileType])
+}
+
+model TimeLog {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String
+  hours     Float
+  date      DateTime // date of work
+  description String? // what was done
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([date])
+}
