@@ -5,7 +5,6 @@ import { useRouter, useParams } from "next/navigation";
 import StatusBadge from "@/components/StatusBadge";
 import RoleBadges from "@/components/RoleBadges";
 import PhaseTracker from "@/components/PhaseTracker";
-import BudgetTracker from "@/components/BudgetTracker";
 import { Project, UserRole, ProjectPhase } from "@/types";
 
 interface ProjectDetail extends Project {
@@ -193,7 +192,7 @@ export default function ProjectDetailPage() {
         )}
 
         {/* Info Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className={`grid gap-4 mb-6 ${project.budget ? "grid-cols-2 md:grid-cols-4" : "grid-cols-1 md:grid-cols-3"}`}>
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <p className="text-xs text-gray-500 font-medium uppercase mb-2">Data Inizio</p>
             <p className="text-lg font-semibold text-gray-900">{startDateStr}</p>
@@ -208,17 +207,14 @@ export default function ProjectDetailPage() {
             <p className="text-xs text-gray-500 font-medium uppercase mb-2">Ore Totali</p>
             <p className="text-lg font-semibold text-gray-900">{totalHours.toFixed(1)}</p>
           </div>
-        </div>
 
-        {/* Budget Tracker */}
-        {project.budget && (
-          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
-              Budget
-            </h2>
-            <BudgetTracker budget={project.budget} totalHours={totalHours} />
-          </div>
-        )}
+          {project.budget && (
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <p className="text-xs text-gray-500 font-medium uppercase mb-2">Budget Pianificato</p>
+              <p className="text-lg font-semibold text-gray-900">€{project.budget.toFixed(2)}</p>
+            </div>
+          )}
+        </div>
 
         {/* Team */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
