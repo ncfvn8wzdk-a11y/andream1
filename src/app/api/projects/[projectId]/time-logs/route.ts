@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity-logger";
 
 export async function GET(
   req: NextRequest,
@@ -36,6 +37,12 @@ export async function POST(
       );
     }
 
+    // Get user name for activity log
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true },
+    });
+
     const timeLog = await prisma.timeLog.create({
       data: {
         userId,
@@ -45,6 +52,14 @@ export async function POST(
         description: description || undefined,
       },
     });
+
+    // Log activity
+    await logActivity(
+      params.projectId,
+      "hours_logged",
+      `${parseFloat(hours)}h registrate`,
+      `${user?.name || "Team member"} ha registrato ${parseFloat(hours)}h il ${new Date(date).toLocaleDateString("it-IT")}${description ? `: ${description}` : ""}`
+    );
 
     return NextResponse.json({ data: timeLog }, { status: 201 });
   } catch (error) {

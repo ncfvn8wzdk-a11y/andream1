@@ -22,27 +22,50 @@ const ACTIVITY_LABELS: Record<string, string> = {
   file_uploaded: "File Caricato",
 };
 
+interface ProjectWithOwner {
+  id: string;
+  name: string;
+  ownerId: string;
+}
+
 export default function ActivityPage() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as string;
 
+  const [project, setProject] = useState<ProjectWithOwner | null>(null);
   const [projectName, setProjectName] = useState("");
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [projectRes, activitiesRes] = await Promise.all([
-          fetch(`/api/projects/${projectId}`),
-          fetch(`/api/projects/${projectId}/activities`),
-        ]);
-
+        const projectRes = await fetch(`/api/projects/${projectId}`);
         const projectJson = await projectRes.json();
-        setProjectName(projectJson.data?.name ?? "Progetto");
 
+        if (!projectRes.ok || !projectJson.data) {
+          setError("Progetto non trovato");
+          return;
+        }
+
+        const projectData = projectJson.data as ProjectWithOwner;
+        setProject(projectData);
+        setProjectName(projectData.name);
+
+        // Check if user is owner (for now, assume PLACEHOLDER is always owner)
+        // In production, this should check against authenticated user
+        const isCurrentUserOwner = projectData.ownerId === "PLACEHOLDER" || projectData.ownerId;
+        setIsOwner(isCurrentUserOwner);
+
+        if (!isCurrentUserOwner) {
+          setError("Solo il proprietario del progetto può accedere a questa pagina");
+          return;
+        }
+
+        const activitiesRes = await fetch(`/api/projects/${projectId}/activities`);
         const activitiesJson = await activitiesRes.json();
         setActivities(activitiesJson.data ?? []);
       } catch (err) {

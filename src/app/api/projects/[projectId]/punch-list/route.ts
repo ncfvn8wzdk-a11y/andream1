@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity-logger";
 
 export async function GET(
   req: NextRequest,
@@ -47,6 +48,21 @@ export async function POST(
         dueDate: dueDate ? new Date(dueDate) : undefined,
       },
     });
+
+    // Log activity
+    const severityLabel = {
+      critical: "Critico",
+      major: "Maggiore",
+      minor: "Minore",
+      cosmetic: "Cosmetico",
+    }[severity || "minor"];
+
+    await logActivity(
+      params.projectId,
+      "punch_added",
+      `[${severityLabel}] ${title}`,
+      `Item aggiunto alla punch list${foundDuring ? ` (trovato durante ${foundDuring})` : ""}`
+    );
 
     return NextResponse.json({ data: item }, { status: 201 });
   } catch (error) {

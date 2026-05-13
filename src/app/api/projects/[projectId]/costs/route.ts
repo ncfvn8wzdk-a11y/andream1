@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity-logger";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 
@@ -66,6 +67,14 @@ export async function POST(
         uploadedBy: "PLACEHOLDER", // Will be replaced with session user after auth setup
       },
     });
+
+    // Log activity
+    await logActivity(
+      params.projectId,
+      "cost_added",
+      `€${amount.toFixed(2)} - ${vendor || "Documento"} aggiunto`,
+      `${vendor || "Fornitore"}: €${amount.toFixed(2)}${description ? ` - ${description}` : ""}`
+    );
 
     return NextResponse.json({ data: cost }, { status: 201 });
   } catch (error) {

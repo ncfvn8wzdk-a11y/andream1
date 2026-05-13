@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity-logger";
 
 export async function GET(
   req: NextRequest,
@@ -45,6 +46,14 @@ export async function POST(
         status: status || "pending",
       },
     });
+
+    // Log activity
+    await logActivity(
+      params.projectId,
+      "milestone_update",
+      `Milestone: ${title}`,
+      `Milestone "${title}" creato per il ${new Date(plannedDate).toLocaleDateString("it-IT")}`
+    );
 
     return NextResponse.json({ data: milestone }, { status: 201 });
   } catch (error) {

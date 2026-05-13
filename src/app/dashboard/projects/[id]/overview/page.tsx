@@ -35,6 +35,7 @@ export default function ProjectOverviewPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [generatingReport, setGeneratingReport] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -56,6 +57,31 @@ export default function ProjectOverviewPage() {
 
     loadData();
   }, [projectId]);
+
+  const handleGenerateReport = async () => {
+    setGeneratingReport(true);
+    try {
+      const response = await fetch(`/api/projects/${projectId}/report-meeting`);
+      if (!response.ok) {
+        alert("Errore nella generazione del report");
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Meeting_Report_${data?.project.name.replace(/\s+/g, "_")}_${new Date().toISOString().split("T")[0]}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      alert("Errore nel download del report");
+    } finally {
+      setGeneratingReport(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -137,7 +163,16 @@ export default function ProjectOverviewPage() {
               </p>
             )}
           </div>
-          <StatusBadge status={project.status} />
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleGenerateReport}
+              disabled={generatingReport}
+              className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 disabled:opacity-50"
+            >
+              {generatingReport ? "Generando..." : "📊 Genera Report"}
+            </button>
+            <StatusBadge status={project.status} />
+          </div>
         </div>
 
         {/* Phase Tracker */}
