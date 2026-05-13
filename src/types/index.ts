@@ -1,4 +1,4 @@
-export type UserRole = "owner" | "lead" | "member";
+export type UserRole = "project_leader" | "project_support" | "supervisor";
 
 export type ProjectStatus = "active" | "on-hold" | "completed" | "archived";
 
@@ -19,6 +19,8 @@ export interface Project {
   description?: string;
   businessBenefit?: string;
   status: ProjectStatus;
+  startDate?: Date;
+  endDate?: Date;
   closedAt?: Date;
   ownerId: string;
   createdAt: Date;
