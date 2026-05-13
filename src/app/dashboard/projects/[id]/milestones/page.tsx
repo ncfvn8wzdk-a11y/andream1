@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import ProjectNavTabs from "@/components/ProjectNavTabs";
+import Breadcrumb from "@/components/Breadcrumb";
 import { Milestone } from "@/types";
 
 interface FormData {
@@ -157,14 +159,19 @@ export default function MilestonesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ProjectNavTabs projectId={projectId} />
       <div className="max-w-4xl mx-auto px-4 py-10">
-        {/* Header */}
-        <button
-          onClick={() => router.push(`/dashboard/projects/${projectId}`)}
-          className="text-blue-600 hover:text-blue-700 font-medium text-sm mb-4"
-        >
-          ← Progetto
-        </button>
+        {/* Breadcrumb */}
+        <div className="mb-6">
+          <Breadcrumb
+            items={[
+              { label: "Dashboard", href: "/dashboard" },
+              { label: "Progetti", href: "/dashboard/projects" },
+              { label: projectName || "Progetto", href: `/dashboard/projects/${projectId}/overview` },
+              { label: "Milestone", href: "#" },
+            ]}
+          />
+        </div>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Milestone</h1>
         <p className="text-gray-600 text-sm mb-8">{projectName}</p>

@@ -5,6 +5,8 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import StatusBadge from "@/components/StatusBadge";
 import PhaseTracker from "@/components/PhaseTracker";
+import ProjectNavTabs from "@/components/ProjectNavTabs";
+import Breadcrumb from "@/components/Breadcrumb";
 import { Project, ProjectPhase } from "@/types";
 
 interface DashboardData {
@@ -145,14 +147,18 @@ export default function ProjectOverviewPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ProjectNavTabs projectId={projectId} />
       <div className="max-w-6xl mx-auto px-4 py-10">
-        {/* Header */}
-        <button
-          onClick={() => router.push("/dashboard/projects")}
-          className="text-blue-600 hover:text-blue-700 font-medium text-sm mb-4"
-        >
-          ← Progetti
-        </button>
+        {/* Breadcrumb */}
+        <div className="mb-6">
+          <Breadcrumb
+            items={[
+              { label: "Dashboard", href: "/dashboard" },
+              { label: "Progetti", href: "/dashboard/projects" },
+              { label: data?.project.name || "Progetto", href: "#" },
+            ]}
+          />
+        </div>
 
         <div className="flex items-start justify-between gap-4 mb-8">
           <div>
