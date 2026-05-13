@@ -78,6 +78,45 @@ export interface ProjectCost {
   uploadedAt: Date;
 }
 
+export interface Milestone {
+  id: string;
+  projectId: string;
+  title: string;
+  description?: string;
+  plannedDate: Date;
+  actualDate?: Date;
+  status: "pending" | "in-progress" | "completed";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface PunchListItem {
+  id: string;
+  projectId: string;
+  title: string;
+  description?: string;
+  severity: "critical" | "major" | "minor" | "cosmetic";
+  status: "open" | "in-progress" | "closed";
+  foundDuring?: "FAT" | "SAT" | "installation" | "other";
+  assignedTo?: string;
+  dueDate?: Date;
+  closedAt?: Date;
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Activity {
+  id: string;
+  projectId: string;
+  type: "phase_change" | "milestone_update" | "cost_added" | "hours_logged" | "punch_added" | "file_uploaded";
+  title: string;
+  description?: string;
+  metadata?: string;
+  userId?: string;
+  createdAt: Date;
+}
+
 export interface ProjectMember {
   id: string;
   userId: string;

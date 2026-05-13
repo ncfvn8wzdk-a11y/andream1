@@ -50,6 +50,9 @@ model Project {
   files       ProjectFile[]
   timeLogs    TimeLog[]
   costs       ProjectCost[]
+  milestones  Milestone[]
+  punchList   PunchListItem[]
+  activities  Activity[]
 
   @@index([ownerId])
   @@index([status])
@@ -126,5 +129,64 @@ model ProjectCost {
 
   @@index([projectId])
   @@index([documentType])
+}
+
+model Milestone {
+  id        String   @id @default(cuid())
+  projectId String
+  title     String   // es. "FAT Completato", "Ordinazione Componenti"
+  description String?
+  plannedDate DateTime
+  actualDate  DateTime?
+  status    String   @default("pending") // pending, in-progress, completed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+}
+
+model PunchListItem {
+  id        String   @id @default(cuid())
+  projectId String
+  title     String
+  description String?
+  severity  String   @default("minor") // critical, major, minor, cosmetic
+  status    String   @default("open") // open, in-progress, closed
+  foundDuring String? // FAT, SAT, installation, other
+  assignedTo String?
+  dueDate   DateTime?
+  closedAt  DateTime?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+  @@index([severity])
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  projectId String
+  type      String   // phase_change, milestone_update, cost_added, hours_logged, punch_added, file_uploaded
+  title     String
+  description String?
+  metadata  String?  // JSON with additional data
+  userId    String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([type])
+  @@index([createdAt])
 }
 
