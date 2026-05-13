@@ -15,6 +15,7 @@ export interface User {
 export interface Project {
   id: string;
   name: string;
+  commessa?: string;
   description?: string;
   status: ProjectStatus;
   ownerId: string;

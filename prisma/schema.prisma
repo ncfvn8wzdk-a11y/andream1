@@ -30,6 +30,7 @@ model User {
 model Project {
   id          String     @id @default(cuid())
   name        String
+  commessa    String?    // numero commessa (job order number)
   description String?
   status      String     @default("active") // active, on-hold, completed, archived
   ownerId     String
