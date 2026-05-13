@@ -49,6 +49,7 @@ model Project {
   members     ProjectMember[]
   files       ProjectFile[]
   timeLogs    TimeLog[]
+  costs       ProjectCost[]
 
   @@index([ownerId])
   @@index([status])
@@ -106,3 +107,24 @@ model TimeLog {
   @@index([userId])
   @@index([date])
 }
+
+model ProjectCost {
+  id        String   @id @default(cuid())
+  projectId String
+  fileName  String
+  fileUrl   String   // path or S3 URL
+  documentType String // invoice, order, estimate, other
+  amount    Float    // €uro amount extracted
+  vendor    String?  // supplier/vendor name
+  description String? // notes about this cost
+  date      DateTime // document date
+  uploadedBy String
+  uploadedAt DateTime @default(now())
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([documentType])
+}
+

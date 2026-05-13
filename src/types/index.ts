@@ -64,6 +64,20 @@ export interface ProjectReportData {
   totalHours: number;
 }
 
+export interface ProjectCost {
+  id: string;
+  projectId: string;
+  fileName: string;
+  fileUrl: string;
+  documentType: "invoice" | "order" | "estimate" | "other";
+  amount: number;
+  vendor?: string;
+  description?: string;
+  date: Date;
+  uploadedBy: string;
+  uploadedAt: Date;
+}
+
 export interface ProjectMember {
   id: string;
   userId: string;
