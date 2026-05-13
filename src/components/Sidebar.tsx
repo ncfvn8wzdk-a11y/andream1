@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import Logo from "./Logo";
 
 interface NavItem {
@@ -13,6 +14,7 @@ interface NavItem {
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const mainNavItems: NavItem[] = [
     { label: "Dashboard", href: "/dashboard", icon: "📊" },
@@ -68,9 +70,21 @@ export default function Sidebar() {
         </Link>
       </div>
 
-      {/* Footer */}
-      <div className="px-4 py-4 border-t border-slate-700 text-xs text-slate-400">
-        <p>v1.0 • Timezone Aware</p>
+      {/* User & Logout */}
+      <div className="px-4 py-4 border-t border-slate-700">
+        {session?.user && (
+          <div className="mb-3">
+            <p className="text-xs font-medium text-white truncate">{session.user.name}</p>
+            <p className="text-xs text-slate-400 truncate">{session.user.email}</p>
+          </div>
+        )}
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="w-full text-left text-xs text-slate-400 hover:text-red-400 transition-colors py-1"
+        >
+          Esci →
+        </button>
+        <p className="text-xs text-slate-500 mt-2">v1.0 • Timezone Aware</p>
       </div>
     </aside>
   );

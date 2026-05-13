@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import ProjectNavTabs from "@/components/ProjectNavTabs";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Activity } from "@/types";
@@ -33,6 +34,7 @@ interface ProjectWithOwner {
 export default function ActivityPage() {
   const router = useRouter();
   const params = useParams();
+  const { data: session } = useSession();
   const projectId = params.id as string;
 
   const [project, setProject] = useState<ProjectWithOwner | null>(null);
@@ -57,9 +59,7 @@ export default function ActivityPage() {
         setProject(projectData);
         setProjectName(projectData.name);
 
-        // Check if user is owner (for now, assume PLACEHOLDER is always owner)
-        // In production, this should check against authenticated user
-        const isCurrentUserOwner = projectData.ownerId === "PLACEHOLDER" || projectData.ownerId;
+        const isCurrentUserOwner = projectData.ownerId === session?.user?.id;
         setIsOwner(isCurrentUserOwner);
 
         if (!isCurrentUserOwner) {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import TeamMemberSelector from "@/components/TeamMemberSelector";
 import { UserRole, ProjectType } from "@/types";
 import { PROJECT_TYPES } from "@/lib/project-config";
@@ -41,6 +42,7 @@ const EMPTY_FORM: FormData = {
 
 export default function NewProjectPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [form, setForm] = useState<FormData>(EMPTY_FORM);
   const [members, setMembers] = useState<MemberAssignment[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -82,7 +84,7 @@ export default function NewProjectPage() {
           budget: form.budget ? parseFloat(form.budget) : undefined,
           startDate: form.startDate || undefined,
           endDate: form.endDate || undefined,
-          ownerId: "PLACEHOLDER", // replaced with session user id after auth setup
+          ownerId: session?.user?.id ?? "",
           members,
         }),
       });
