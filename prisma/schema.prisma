@@ -1,0 +1,192 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  name      String
+  timezone  String     @default("UTC")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relations
+  ownedProjects  Project[]      @relation("owner")
+  projectMembers ProjectMember[]
+  timeLogs       TimeLog[]
+
+  @@index([email])
+}
+
+model Project {
+  id              String     @id @default(cuid())
+  name            String
+  commessa        String?
+  description     String?
+  businessBenefit String?
+  projectType     String     @default("plant") // plant, production_line, retrofit, maintenance
+  currentPhase    String     @default("concept") // concept, basic_eng, detail_eng, procurement, build, fat, installation, sat, training, handover
+  budget          Float?     // budget pianificato in €
+  status          String     @default("active") // active, on-hold, completed, closed, archived
+  startDate       DateTime?
+  endDate         DateTime?
+  closedAt        DateTime?
+  ownerId         String
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  // Relations
+  owner       User             @relation("owner", fields: [ownerId], references: [id])
+  members     ProjectMember[]
+  files       ProjectFile[]
+  timeLogs    TimeLog[]
+  costs       ProjectCost[]
+  milestones  Milestone[]
+  punchList   PunchListItem[]
+  activities  Activity[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([currentPhase])
+}
+
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String
+  role      String   @default("project_support") // project_leader, project_support, supervisor
+  joinedAt  DateTime @default(now())
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@index([projectId])
+}
+
+model ProjectFile {
+  id        String   @id @default(cuid())
+  projectId String
+  fileName  String
+  fileType  String   // invoice, drawing, photo, pdf, other
+  fileSize  Int      // in bytes
+  fileUrl   String   // path or S3 URL
+  uploadedBy String
+  uploadedAt DateTime @default(now())
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([fileType])
+}
+
+model TimeLog {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String
+  hours     Float
+  date      DateTime // date of work
+  description String? // what was done
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([date])
+}
+
+model ProjectCost {
+  id        String   @id @default(cuid())
+  projectId String
+  fileName  String
+  fileUrl   String   // path or S3 URL
+  documentType String // invoice, order, estimate, other
+  amount    Float    // €uro amount extracted
+  vendor    String?  // supplier/vendor name
+  description String? // notes about this cost
+  date      DateTime // document date
+  uploadedBy String
+  uploadedAt DateTime @default(now())
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([documentType])
+}
+
+model Milestone {
+  id        String   @id @default(cuid())
+  projectId String
+  title     String   // es. "FAT Completato", "Ordinazione Componenti"
+  description String?
+  plannedDate DateTime
+  actualDate  DateTime?
+  status    String   @default("pending") // pending, in-progress, completed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+}
+
+model PunchListItem {
+  id        String   @id @default(cuid())
+  projectId String
+  title     String
+  description String?
+  severity  String   @default("minor") // critical, major, minor, cosmetic
+  status    String   @default("open") // open, in-progress, closed
+  foundDuring String? // FAT, SAT, installation, other
+  assignedTo String?
+  dueDate   DateTime?
+  closedAt  DateTime?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+  @@index([severity])
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  projectId String
+  type      String   // phase_change, milestone_update, cost_added, hours_logged, punch_added, file_uploaded
+  title     String
+  description String?
+  metadata  String?  // JSON with additional data
+  userId    String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([type])
+  @@index([createdAt])
+}
+
